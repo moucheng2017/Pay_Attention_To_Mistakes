@@ -4,7 +4,20 @@ This repository contains an updated version of a PyTorch implementation of the B
 
 [Mou-Cheng Xu](https://moucheng2017.github.io/) is the main developer of the code.
 
+## How to use the code
+1. Download the whole repo including both the code and the datasets folder, compile your environment using bmvc2020_environment.yml file.
+2. Use Run.py to run and debug.
 
+## How to adapt the repo on your own datasets
+1. An example of the folder structure is in datasets folder.
+
+## Difference between the current code and the implementation in the paper:
+1. To test the generalisation of the trained model, in the current code, we add adversarial noises when we evaluate IoU and Hausdorff distance. This is to compensate the simplicity of the experimental settings (aka. binary segmentation).
+2. ''ERF_all_fn'' is very robust in the difficult testing setting, ''ERF_all_fp'' is the next best model. They both significally outperform baselines.
+
+## Potential future work
+1. Extending the framework to multi-class.
+2. The framework has a great potential in other tasks such as denoising, deblurring and semi-supervised learning.
 
 
 ## Citation
