@@ -7,7 +7,7 @@ This repository contains a PyTorch implementation of the BMVC 2020 paper ["Learn
 1. Download the whole repo including both the code and the datasets folder, compile your environment using bmvc2020_environment.yml file.
 2. Use Run.py to run and debug.
 
-## How to adapt the repo on your own datasets
+## How to adapt this repo to your own datasets
 1. An example of the folder structure is in datasets folder.
 2. After you prepare the datasets, you can easily tune the interface in Run.py.
 3. In ''network'' argument in Run.py, we provide different combinations of our model to be called: ''ERF_encoder_fp'', ''ERF_encoder_fn'', ''ERF_decoder_fp'', ''ERF_decoder_fn'', ''ERF_all_fp'', ''ERF_all_fn''. 
