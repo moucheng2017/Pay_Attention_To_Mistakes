@@ -2,7 +2,7 @@
 
 This repository contains an updated version of a PyTorch implementation of the BMVC 2020 paper ["Learning To Pay Attention To Mistakes", 2020](https://www.bmvc2020-conference.com/assets/papers/0335.pdf). 
 
-[Mou-Cheng Xu](https://moucheng2017.github.io/) is the main developer of the code.
+[Mou-Cheng Xu](https://moucheng2017.github.io/) is the developer of the code.
 
 1. Download the whole repo including both the code and the datasets folder, compile your environment using bmvc2020_environment.yml file.
 2. Use Run.py to run and debug.
