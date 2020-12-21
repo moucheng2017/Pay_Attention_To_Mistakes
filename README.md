@@ -15,7 +15,7 @@ This repository contains an updated version of a PyTorch implementation of the B
 5. ''ERF_all_fn'' is very robust in the difficult testing setting, ''ERF_all_fp'' is the next best model. They both significally outperform baselines.
 
 ## More difficult testing in the code:
-To test the generalisation of the trained model, in the current code, we add adversarial noises when we evaluate IoU and Hausdorff distance. This is to compensate the simplicity of the experimental settings (aka. binary segmentation).
+To test the generalisation of the trained model on unseen data, we add adversarial noises when we evaluate IoU and Hausdorff distance. This is to compensate the simplicity of the experimental settings (aka. binary segmentation).
 
 ## Potential future work
 1. Extending the framework to multi-class.
