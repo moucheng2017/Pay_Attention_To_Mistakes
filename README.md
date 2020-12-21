@@ -4,12 +4,13 @@ This repository contains an updated version of a PyTorch implementation of the B
 
 [Mou-Cheng Xu](https://moucheng2017.github.io/) is the main developer of the code.
 
-## How to use the code
 1. Download the whole repo including both the code and the datasets folder, compile your environment using bmvc2020_environment.yml file.
 2. Use Run.py to run and debug.
 
 ## How to adapt the repo on your own datasets
 1. An example of the folder structure is in datasets folder.
+2. After you prepare the datasets, you can easily tune the interface in Run.py.
+3. In ''network'' argument in Run.py, we provide different combinations of our model to be called: ''ERF_encoder_fp'', ''ERF_encoder_fn'', ''ERF_decoder_fp'', ''ERF_decoder_fn'', ''ERF_all_fp'', ''ERF_all_fn''. When you use any configurations including 'fn', please set the ''reverse'' flag as ''True''.
 
 ## Difference between the current code and the implementation in the paper:
 1. To test the generalisation of the trained model, in the current code, we add adversarial noises when we evaluate IoU and Hausdorff distance. This is to compensate the simplicity of the experimental settings (aka. binary segmentation).
