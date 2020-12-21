@@ -14,10 +14,10 @@ This repository contains a PyTorch implementation of the BMVC 2020 paper ["Learn
 4. When you use any configurations including 'fn' in ''network'', please set the ''reverse'' flag as ''True''.
 5. ''ERF_all_fn'' is very robust in the difficult testing setting, ''ERF_all_fp'' is the next best model. They both significally outperform baselines.
 
-## More difficult testing in the code:
+## More difficult testing:
 To test the generalisation of the trained model on unseen data, we add adversarial noises when we evaluate IoU and Hausdorff distance. This is to compensate the simplicity of the experimental settings (aka. binary segmentation).
 
-## Potential future work
+## Future work
 1. Extending the framework to multi-class.
 2. The framework has a great potential in other tasks such as denoising, deblurring and semi-supervised learning.
 
