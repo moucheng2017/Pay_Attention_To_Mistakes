@@ -42,11 +42,11 @@
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="4">
+  <component name="ProjectFrameBounds" extendedState="5">
     <option name="x" value="1289" />
-    <option name="y" value="25" />
-    <option name="width" value="1271" />
-    <option name="height" value="1415" />
+    <option name="y" value="27" />
+    <option name="width" value="1261" />
+    <option name="height" value="1413" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -68,7 +68,7 @@
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/Run.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="RunDashboard">
