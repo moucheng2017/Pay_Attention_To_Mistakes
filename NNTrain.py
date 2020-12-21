@@ -32,6 +32,7 @@ from NNBaselines import CSE_UNet_Full
 
 from NNUtils import fgsm_attack
 
+
 def trainModels(
                 data_directory,
                 dataset_name,
@@ -136,6 +137,8 @@ def trainModels(
                        '_repeat_' + repeat_str + \
                        '_augment_' + str(augmentation) + \
                        '_lr_decay_' + str(lr_decay)
+
+        # you can add more baselines from NNBaselines.py
 
         # ====================================================================================================================================================================
         trainloader, validateloader, testloader, train_dataset, validate_dataset, test_dataset = getData(data_directory, dataset_name, train_batchsize, validate_batchsize, augmentation)
@@ -317,6 +320,8 @@ def trainSingleModel(model,
             loss.backward()
             optimizer.step()
 
+            # The taks of binary segmentation is too easy, to compensate the simplicity of the task,
+            # we add adversarial noises in the testing images:
             data_grad = images.grad.data
             perturbed_data = fgsm_attack(images, 0.2, data_grad)
             prob_outputs = model(perturbed_data)
@@ -411,6 +416,7 @@ def trainSingleModel(model,
 
             # A learning rate schedule plan for fn attention:
             # we ramp-up linearly inside of each iteration
+            # without the warm-up, it is hard to train sometimes
             if 'fn' in model_name or 'FN' in model_name:
                 if reverse_mode is True:
                     if epoch < 10:
