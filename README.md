@@ -5,3 +5,15 @@ This repository contains an updated version of a PyTorch implementation of the B
 [Mou-Cheng Xu](https://moucheng2017.github.io/) is the main developer of the code.
 
 
+
+
+## Citation
+If you use this code or the dataset for your research, please cite our paper:
+```
+@article{LearnMistakeAttention,
+  title={Learning To Pay Attention To Mistakes},
+  author={Xu, Mou-Cheng and P. Neil, Oxtoby and C. Alexander, Daniel and Jacob, Joseph},
+  journal={BMVC},
+  year={2020},
+}
+```
