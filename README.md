@@ -23,7 +23,7 @@ To test the generalisation of the trained model, in the current code, we add adv
 
 
 ## Citation
-If you use this code for your research, please cite our paper:
+If you find the code or the README useful for your research, please cite our paper:
 ```
 @article{LearnMistakeAttention,
   title={Learning To Pay Attention To Mistakes},
