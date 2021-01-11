@@ -367,102 +367,101 @@ def evaluate(evaluatedata, model, device, reverse_mode, class_no):
 
 def test(
         testdata,
-         model,
+         models_path,
          device,
          reverse_mode,
          class_no,
          save_path):
 
-    model.eval()
+    all_models = glob.glob(os.path.join(models_path, '*.pt'))
 
-    # with torch.no_grad():
+    test_f1 = []
+    test_iou = []
+    test_h_dist = []
+    test_recall = []
+    test_precision = []
 
-    f1 = 0
-    test_iou = 0
-    test_h_dist = 0
-    recall = 0
-    precision = 0
+    test_iou_adv = []
+    test_h_dist_adv = []
 
-    FPs_Ns = 0
-    FNs_Ps = 0
-    FPs_Ps = 0
-    FNs_Ns = 0
-    TPs = 0
-    TNs = 0
-    FNs = 0
-    FPs = 0
-    Ps = 0
-    Ns = 0
+    for model in all_models:
 
-    effective_h = 0
+        model = torch.load(model)
+        model.eval()
 
-    for j, (testimg, testlabel, testname) in enumerate(testdata):
-        # validate batch size will be set up as 2
-        # testimg = torch.from_numpy(testimg).to(device=device, dtype=torch.float32)
-        # testlabel = torch.from_numpy(testlabel).to(device=device, dtype=torch.float32)
+        for j, (testimg, testlabel, testname) in enumerate(testdata):
+            # validate batch size will be set up as 2
+            # testimg = torch.from_numpy(testimg).to(device=device, dtype=torch.float32)
+            # testlabel = torch.from_numpy(testlabel).to(device=device, dtype=torch.float32)
 
-        testimg = testimg.to(device=device, dtype=torch.float32)
-        testimg.requires_grad = True
+            testimg = testimg.to(device=device, dtype=torch.float32)
+            testimg.requires_grad = True
 
-        testlabel = testlabel.to(device=device, dtype=torch.float32)
+            testlabel = testlabel.to(device=device, dtype=torch.float32)
 
-        threshold = torch.tensor([0.5], dtype=torch.float32, device=device, requires_grad=False)
+            threshold = torch.tensor([0.5], dtype=torch.float32, device=device, requires_grad=False)
+            upper = torch.tensor([1.0], dtype=torch.float32, device=device, requires_grad=False)
+            lower = torch.tensor([0.0], dtype=torch.float32, device=device, requires_grad=False)
 
-        upper = torch.tensor([1.0], dtype=torch.float32, device=device, requires_grad=False)
+            # c, h, w = testimg.size()
+            # testimg = testimg.expand(1, c, h, w)
 
-        lower = torch.tensor([0.0], dtype=torch.float32, device=device, requires_grad=False)
+            testoutput = model(testimg)
+            # (todo) add for multi-class
+            prob_testoutput = torch.sigmoid(testoutput)
 
-        # c, h, w = testimg.size()
-        # testimg = testimg.expand(1, c, h, w)
+            if class_no == 2:
 
-        testoutput = model(testimg)
+                if reverse_mode is True:
 
-        prob_testoutput = torch.sigmoid(testoutput)
+                    testoutput = torch.where(prob_testoutput < threshold, upper, lower)
 
-        # attack testing data:
-        loss = dice_loss(prob_testoutput, testlabel)
-        model.zero_grad()
-        loss.backward()
-        data_grad = testimg.grad.data
-        perturbed_data = fgsm_attack(testimg, 0.2, data_grad)
-        prob_testoutput = model(perturbed_data)
-        prob_testoutput = torch.sigmoid(prob_testoutput)
+                else:
 
-        if class_no == 2:
+                    testoutput = torch.where(prob_testoutput > threshold, upper, lower)
 
-            if reverse_mode is True:
+            # metrics before attack:
+            mean_iu_ = segmentation_scores(testlabel, testoutput, class_no)
+            test_iou.append(mean_iu_)
 
-                testoutput = torch.where(prob_testoutput < threshold, upper, lower)
+            if (testoutput == 1).sum() > 1 and (testlabel == 1).sum() > 1:
+                h_dis95_ = hd95(testoutput, testlabel, class_no)
+                test_h_dist.append(h_dis95_)
 
-            else:
+            f1_, recall_, precision_, TP, TN, FP, FN, P, N = f1_score(testlabel, testoutput, class_no)
+            test_f1.append(f1_)
+            test_recall.append(recall_)
+            test_precision.append(precision_)
 
-                testoutput = torch.where(prob_testoutput > threshold, upper, lower)
+            # attack testing data:
+            loss = dice_loss(prob_testoutput, testlabel)
+            model.zero_grad()
+            loss.backward()
+            data_grad = testimg.grad.data
+            perturbed_data = fgsm_attack(testimg, 0.2, data_grad)
+            prob_testoutput_adv = model(perturbed_data)
+            prob_testoutput_adv = torch.sigmoid(prob_testoutput_adv)
 
-        mean_iu_ = segmentation_scores(testlabel, testoutput, class_no)
+            if class_no == 2:
 
-        if (testoutput == 1).sum() > 1 and (testlabel == 1).sum() > 1:
-            h_dis95_ = hd95(testoutput, testlabel, class_no)
-            test_h_dist += h_dis95_
-            effective_h = effective_h + 1
+                if reverse_mode is True:
 
-        f1_, recall_, precision_, TP, TN, FP, FN, P, N = f1_score(testlabel, testoutput, class_no)
+                    testoutput_adv = torch.where(prob_testoutput_adv < threshold, upper, lower)
 
-        f1 += f1_
-        test_iou += mean_iu_
-        recall += recall_
-        precision += precision_
-        TPs += TP
-        TNs += TN
-        FPs += FP
-        FNs += FN
-        Ps += P
-        Ns += N
-        FNs_Ps += (FN + 1e-10) / (P + 1e-10)
-        FPs_Ns += (FP + 1e-10) / (N + 1e-10)
-        FNs_Ns += (FN + 1e-10) / (N + 1e-10)
-        FPs_Ps += (FP + 1e-10) / (P + 1e-10)
+                else:
 
-    prediction_map_path = save_path + '/Test'
+                    testoutput_adv = torch.where(prob_testoutput_adv > threshold, upper, lower)
+
+            mean_iu_adv_ = segmentation_scores(testlabel, testoutput_adv, class_no)
+            test_iou_adv.append(mean_iu_adv_)
+
+            if (testoutput_adv == 1).sum() > 1 and (testlabel == 1).sum() > 1:
+                h_dis95_adv_ = hd95(testoutput_adv, testlabel, class_no)
+                test_h_dist_adv.append(h_dis95_adv_)
+
+    # store the test metrics
+
+    prediction_map_path = save_path + '/Test_result'
 
     try:
 
@@ -477,25 +476,31 @@ def test(
         pass
 
     # save numerical results:
-    result_dictionary = {'Test IoU': str(test_iou / len(testdata)),
-                         'Test f1': str(f1 / len(testdata)),
-                         'Test H-dist': str(test_h_dist / (effective_h + 1)),
-                         'Test recall': str(recall / len(testdata)),
-                         'Test Precision': str(precision / len(testdata)),
-                         'Test FNs_Ps': str(FNs_Ps / len(testdata)),
-                         'Test FPs_Ns': str(FPs_Ns / len(testdata)),
-                         'Test FNs': str(FNs / len(testdata)),
-                         'Test FPs': str(FPs / len(testdata))
-                         }
+    result_dictionary = {
+        'Test IoU mean': str(np.mean(test_iou)),
+        'Test IoU std': str(np.std(test_iou)),
+        'Test f1 mean': str(np.mean(test_f1)),
+        'Test f1 std': str(np.std(test_f1)),
+        'Test H-dist mean': str(np.mean(test_h_dist)),
+        'Test H-dist std': str(np.std(test_h_dist)),
+        'Test precision mean': str(np.mean(test_precision)),
+        'Test precision std': str(np.std(test_precision)),
+        'Test recall mean': str(np.mean(test_recall)),
+        'Test recall std': str(np.std(test_recall)),
+        'Test IoU attack mean': str(np.mean(test_iou_adv)),
+        'Test IoU attack std': str(np.std(test_iou_adv)),
+        'Test H-dist attack mean': str(np.mean(test_h_dist_adv)),
+        'Test H-dist attack std': str(np.std(test_h_dist_adv)),
+    }
 
-    ff_path = prediction_map_path + '/test_result_data.txt'
+    ff_path = prediction_map_path + '/test_results.txt'
     ff = open(ff_path, 'w')
     ff.write(str(result_dictionary))
     ff.close()
 
     print(
         'Test h-dist: {:.4f}, '
-        'Val iou: {:.4f}, '.format(test_h_dist / (effective_h + 1), test_iou / len(testdata)))
+        'Val iou: {:.4f}, '.format(np.mean(test_h_dist), np.mean(test_iou)))
 
 # ==============================================================================================
 

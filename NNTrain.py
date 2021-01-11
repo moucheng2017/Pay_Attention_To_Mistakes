@@ -3,6 +3,8 @@ import errno
 import torch
 import timeit
 
+import glob
+
 import numpy as np
 import torch.nn as nn
 import matplotlib.pyplot as plt
@@ -138,8 +140,6 @@ def trainModels(
                        '_augment_' + str(augmentation) + \
                        '_lr_decay_' + str(lr_decay)
 
-        # you can add more baselines from NNBaselines.py
-
         # ====================================================================================================================================================================
         trainloader, validateloader, testloader, train_dataset, validate_dataset, test_dataset = getData(data_directory, dataset_name, train_batchsize, validate_batchsize, augmentation)
         # ===================
@@ -173,9 +173,9 @@ def getData(data_directory, dataset_name, train_batchsize, validate_batchsize, d
 
     test_dataset = CustomDataset(test_image_folder, test_label_folder, 'full')
 
-    trainloader = data.DataLoader(train_dataset, batch_size=train_batchsize, shuffle=True, num_workers=1, drop_last=True)
+    trainloader = data.DataLoader(train_dataset, batch_size=train_batchsize, shuffle=True, num_workers=4, drop_last=True)
 
-    validateloader = data.DataLoader(validate_dataset, batch_size=validate_batchsize, shuffle=False, num_workers=1, drop_last=False)
+    validateloader = data.DataLoader(validate_dataset, batch_size=1, shuffle=False, num_workers=1, drop_last=False)
 
     testloader = data.DataLoader(test_dataset, batch_size=1, shuffle=False, num_workers=1, drop_last=False)
 
@@ -434,8 +434,15 @@ def trainSingleModel(model,
         else:
             pass
 
+        # save models at last 10 epochs
+        if epoch >= (num_epochs - 10):
+            save_model_name_full = saved_model_path + '/' + save_model_name + '_epoch' + str(epoch) + '.pt'
+            path_model = save_model_name_full
+            torch.save(model, path_model)
+
+    # Test on all models and average them:
     test(testdata,
-         model,
+         saved_model_path,
          device,
          reverse_mode=reverse_mode,
          class_no=class_no,
@@ -444,9 +451,6 @@ def trainSingleModel(model,
     # save model
     stop = timeit.default_timer()
     print('Time: ', stop - start)
-    save_model_name_full = saved_model_path + '/' + save_model_name + '_Final.pt'
-    path_model = save_model_name_full
-    torch.save(model, path_model)
     print('\n')
     print('\nTraining finished and model saved\n')
 

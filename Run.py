@@ -17,9 +17,9 @@ if __name__ == '__main__':
                 repeat=1,
                 train_batchsize=4,
                 validate_batchsize=1,
-                num_epochs=3,
+                num_epochs=10,
                 learning_rate=1e-4,
-                width=8,
-                network='ERF_encoder_fp',
+                width=32,
+                network='unet',
                 augmentation='all_flip',
                 reverse=False)
