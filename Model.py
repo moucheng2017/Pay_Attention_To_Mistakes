@@ -11,7 +11,7 @@ class ERFANet(nn.Module):
 
     # Effective Receptive Attention Network
 
-    def __init__(self, in_ch, width, class_no, attention_type, mode='all', identity_add=True):
+    def __init__(self, in_ch, width, class_no, attention_type, dilation, mode='all', identity_add=True):
 
         super(ERFANet, self).__init__()
 
@@ -29,10 +29,10 @@ class ERFANet(nn.Module):
 
         if 'encoder' in mode or 'all' in mode:
             self.econv0 = single_conv(in_channels=in_ch, out_channels=self.w1, step=1)
-            self.econv1 = MistakeAttention(in_channels=self.w1, out_channels=self.w2, step=2, addition=self.identity, attention_type=attention_type)
-            self.econv2 = MistakeAttention(in_channels=self.w2, out_channels=self.w3, step=2, addition=self.identity, attention_type=attention_type)
-            self.econv3 = MistakeAttention(in_channels=self.w3, out_channels=self.w4, step=2, addition=self.identity, attention_type=attention_type)
-            self.bridge = MistakeAttention(in_channels=self.w4, out_channels=self.w4, step=1, addition=self.identity, attention_type=attention_type)
+            self.econv1 = MistakeAttention(in_channels=self.w1, out_channels=self.w2, step=2, addition=self.identity, attention_type=attention_type, dilation=dilation)
+            self.econv2 = MistakeAttention(in_channels=self.w2, out_channels=self.w3, step=2, addition=self.identity, attention_type=attention_type, dilation=dilation)
+            self.econv3 = MistakeAttention(in_channels=self.w3, out_channels=self.w4, step=2, addition=self.identity, attention_type=attention_type, dilation=dilation)
+            self.bridge = MistakeAttention(in_channels=self.w4, out_channels=self.w4, step=1, addition=self.identity, attention_type=attention_type, dilation=dilation)
         else:
             self.econv0 = single_conv(in_channels=in_ch, out_channels=self.w1, step=1)
             self.econv1 = double_conv(in_channels=self.w1, out_channels=self.w2, step=2)
@@ -131,14 +131,14 @@ def single_conv(in_channels, out_channels, step):
 
 class MistakeAttention(nn.Module):
 
-    def __init__(self, in_channels, out_channels, step, addition, attention_type):
+    def __init__(self, in_channels, out_channels, step, addition, attention_type, dilation):
         super(MistakeAttention, self).__init__()
         self.addition = addition
         self.type = attention_type
 
         if 'FP' in self.type or 'fp' in self.type:
 
-            dilation = 9
+            # dilation = 9
 
             self.main_branch = nn.Sequential(
                 nn.Conv2d(in_channels=in_channels, out_channels=out_channels, kernel_size=3, stride=step, padding=1, bias=False),

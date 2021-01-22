@@ -47,6 +47,7 @@ def trainModels(
                 learning_rate,
                 width,
                 network,
+                dilation,
                 lr_decay=True,
                 augmentation=True,
                 reverse=False):
@@ -85,14 +86,26 @@ def trainModels(
                 class_no=class_no,
                 attention_type=attention_type,
                 mode=mode,
-                identity_add=True)
+                identity_add=True,
+                dilation=dilation)
 
-            Exp_name = network + \
-                       '_batch_' + str(train_batchsize) + \
-                       '_width_' + str(width) + \
-                       '_repeat_' + repeat_str + \
-                       '_augment_' + str(augmentation) + \
-                       '_lr_decay_' + str(lr_decay)
+            if 'fp' in network:
+
+                Exp_name = network + \
+                           '_batch_' + str(train_batchsize) + \
+                           '_width_' + str(width) + \
+                           '_repeat_' + repeat_str + \
+                           '_augment_' + str(augmentation) + \
+                           '_lr_decay_' + str(lr_decay) + '_dilation_' + str(dilation)
+
+            else:
+
+                Exp_name = network + \
+                           '_batch_' + str(train_batchsize) + \
+                           '_width_' + str(width) + \
+                           '_repeat_' + repeat_str + \
+                           '_augment_' + str(augmentation) + \
+                           '_lr_decay_' + str(lr_decay)
 
         # ==================================================
         # Baselines
@@ -109,7 +122,7 @@ def trainModels(
 
         elif network == 'dilated_unet':
             assert reverse is False
-            dilation = 9
+            # dilation = 9
             Exp = DilatedUNet(in_ch=input_dim, width=width, dilation=dilation)
             Exp_name = 'DilatedUNet_batch_' + str(train_batchsize) + \
                        '_width_' + str(width) + \
