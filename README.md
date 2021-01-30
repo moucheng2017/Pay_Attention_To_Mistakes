@@ -8,9 +8,9 @@ This repository contains a PyTorch implementation of the BMVC 2020 paper ["Learn
 2. Use Run.py to run and debug.
 
 ## How to use this repo with your own datasets:
-1. An example of the folder structure is in datasets folder.
+1. An example of the folder structure of training data is in datasets folder.
 2. After you prepare the datasets, you can easily tune the interface in Run.py.
-3. In ''network'' argument in Run.py, we provide different combinations of our model to be called: ''ERF_encoder_fp'', ''ERF_encoder_fn'', ''ERF_decoder_fp'', ''ERF_decoder_fn'', ''ERF_all_fp'', ''ERF_all_fn''. 
+3. In ''network'' argument in ''Run.py'', we provide different combinations of our model to be called: ''ERF_encoder_fp'', ''ERF_encoder_fn'', ''ERF_decoder_fp'', ''ERF_decoder_fn'', ''ERF_all_fp'', ''ERF_all_fn''. 
 4. When you use any configurations including 'fn' in ''network'', please set the ''reverse'' flag as ''True''.
 5. We recomment these two configurations: ''ERF_all_fn'' and ''ERF_all_fp''.
 
