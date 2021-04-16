@@ -19,7 +19,7 @@ To test the generalisation of the trained model on unseen data, we add adversari
 
 ## Future work:
 1. Extending the framework to multi-class.
-2. The framework has a great potential in other tasks such as denoising, deblurring and semi-supervised learning.
+2. The framework has a great potential in other tasks which need heavy regularisation, such as denoising, deblurring and semi-supervised learning.
 
 
 ## Citation:
